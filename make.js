@@ -13,6 +13,7 @@ const ESLINT     = path.join(__dirname, 'node_modules/.bin/eslint');
 const BOOTLINT   = path.join(__dirname, 'node_modules/.bin/bootlint');
 const PUGLINT    = path.join(__dirname, 'node_modules/.bin/pug-lint');
 const FOREVER    = path.join(__dirname, 'node_modules/.bin/forever');
+const HTMLLINT   = path.join(__dirname, 'node_modules/.bin/html-validator');
 
 const MOCHA_OPTS = ' --timeout 15000 --slow 500 --exit';
 
@@ -50,8 +51,9 @@ target.puglint = () => {
 target.lint = () => {
     target.eslint();
     target.puglint();
-    // DIsabling Bootlint until it works with Bootstrap 4
+    // Disabling Bootlint until it works with Bootstrap 4
     //target.bootlint();
+    target.htmllint();
 };
 
 target.functional = () => {
@@ -116,10 +118,12 @@ target['purge-latest'] = () => {
 target.bootlint = () => {
     const port = 3080;
 
-    echo('+ node make start');
-
     env.PORT = port;
     env.NODE_ENV = 'development';
+
+    echo('+ Bootlint task');
+    echo('+ node make start');
+
     target.start();
 
     const pages = [
@@ -127,7 +131,8 @@ target.bootlint = () => {
         'fontawesome',
         'bootswatch',
         'bootlint',
-        'legacy',
+        'legacy/bootstrap',
+        'legacy/bootswatch',
         'showcase',
         'integrations'
     ];
@@ -141,7 +146,7 @@ target.bootlint = () => {
             const url = `http://localhost:${port}/${page}${page === '' ? '' : '/'}`;
 
             if (page !== '') {
-                page += '_';
+                page = `${page.replace(/\//g, '_')}_`;
             }
 
             const output = path.join(__dirname, `${page}lint.html`);
@@ -176,6 +181,77 @@ target.bootlint = () => {
     }, 2000);
 };
 
+target.htmllint = () => {
+    const port = 3081;
+
+    env.PORT = port;
+    env.NODE_ENV = 'development';
+
+    echo('+ HTML validation task');
+    echo('+ node make start');
+
+    target.start();
+
+    const pages = [
+        '',
+        'fontawesome',
+        'bootswatch',
+        'bootlint',
+        'legacy/bootstrap',
+        'legacy/bootswatch',
+        'showcase',
+        'integrations'
+    ];
+
+    let output = '';
+
+
+    echo('------------------------------------------------');
+    async.eachSeries(pages, (page, callback) => {
+        const url = `http://localhost:${port}/${page}${page === '' ? '' : '/'}`;
+
+        if (page !== '') {
+            page = `${page.replace(/\//g, '_')}_`;
+        }
+
+        output = path.join(__dirname, `${page}lint.html`);
+        const file = fs.createWriteStream(output);
+
+        // okay, not really curl, but it communicates
+        echo(`+ curl ${url} > ${output}`);
+
+        file.on('open', () => {
+            http.get(url, (res) => {
+                res.pipe(file);
+                res.on('error', (e) => {
+                    callback(e);
+                });
+            });
+        });
+
+        file.on('finish', () => {
+            file.close();
+
+            echo(`+ html-validator --verbose --file=${output}`);
+
+            exec(`${HTMLLINT} --verbose --format=text --file=${output}`, (code) => {
+                rm(output);
+
+                return callback(code === 0 ? null : 'HTML validation failed!');
+            });
+        });
+
+    }, (err) => {
+        echo('+ node make tryStop');
+        target.tryStop();
+
+        if (err) {
+            echo(`${err}`);
+            process.exit(1);
+        }
+    });
+};
+
 target.all = () => {
     target.test();
     target.run();
@@ -193,6 +269,7 @@ target.help = () => {
     echo('  eslint      run eslint');
     echo('  bootlint    run Bootlint');
     echo('  puglint     run pug-lint');
+    echo('  htmllint    run HTML validator');
     echo('  travis      run Travis CI checks');
     echo('  appveyor    run AppVeyor CI checks');
     echo('  help        shows this help message');
