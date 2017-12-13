@@ -1,5 +1,8 @@
 -var bootstrap = config.bootstrap4.filter(function(o) { return o.latest; })[0];
 
+if (helpers.theme.selected(config, theme) === config.theme)
+    | loadjs(['#{bootswatch.uri}', 'css!https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700'], 'styles');
+
 | loadjs(['#{config.javascript.jquery.uri}', '#{bootstrap.javascriptBundle}'], 'jquery', {
 |     async: false,
 |     numRetries: 3

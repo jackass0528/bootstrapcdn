@@ -101,7 +101,7 @@ function assertValidHTML(response, done) {
                 return false;
             })
             .filter((e) => {
-                const ignores = [];
+                const ignores = [/CSS:/];
 
                 for (let i = 0, len = ignores.length; i < len; i++) {
                     if (e.match(ignores[i])) {

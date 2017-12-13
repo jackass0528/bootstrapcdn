@@ -47,14 +47,32 @@ html(lang='en', prefix='og: http://ogp.me/ns#', itemscope, itemtype='http://sche
         meta(itemprop='image', content=getVersionedPath('/assets/img/og.png'))
 
         -var bootswatch = helpers.theme.fetch(config, theme);
-        link(rel='stylesheet', href=bootswatch.uri, integrity=bootswatch.sri,
-            crossorigin='anonymous')
+
+        unless (helpers.theme.selected(config, theme) === config.theme)
+            link(rel='stylesheet', href=bootswatch.uri, integrity=bootswatch.sri,
+                crossorigin='anonymous')
 
         style
             if (process.env.NODE_ENV === 'production')
+                if (helpers.theme.selected(config, theme) === config.theme)
+                    include:clean-css /assets/css/critical.css
                 include:clean-css /assets/css/style.css
             else
+                if (helpers.theme.selected(config, theme) === config.theme)
+                    include /assets/css/critical.css
                 include /assets/css/style.css
+
+        script(nonce=nonce)
+            include:uglify-js /assets/js/vendor/loadjs.min.js
+
+            include _partials/loadjs.pug
+
+            include:uglify-js /assets/js/vendor/clipboard.min.js
+
+            if (process.env.NODE_ENV === 'production')
+                include:babel:uglify-js /assets/js/main.js
+            else
+                include:babel /assets/js/main.js
 
         block head
 
@@ -76,16 +94,5 @@ html(lang='en', prefix='og: http://ogp.me/ns#', itemscope, itemtype='http://sche
                             .twitter-timeline-custom
 
         include _partials/footer.pug
-
-        script(nonce=nonce)
-            include /assets/js/vendor/clipboard.min.js
-            include /assets/js/vendor/loadjs.min.js
-
-            if (process.env.NODE_ENV === 'production')
-                include:babel:uglify-js /assets/js/main.js
-            else
-                include:babel /assets/js/main.js
-
-            include _partials/loadjs.pug
 
 //- vim: ft=pug sw=4 sts=4 et:
