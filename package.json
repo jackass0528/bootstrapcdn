@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf ./node_modules/",
-    "eslint": "eslint .",
     "puglint": "pug-lint .",
-    "lint": "npm run eslint && npm run puglint",
+    "xo": "xo --quiet",
+    "lint": "npm run xo && npm run puglint",
     "mocha": "mocha --timeout 15000 --slow 500 --exit -i -g \"functional\" -R dot ./tests/",
     "mocha:suite": "mocha --timeout 15000 --slow 500 --exit -R dot ./tests/",
     "mocha:functional": "mocha --timeout 15000 --slow 500 --exit -R tap ./tests/functional_test.js",
@@ -20,6 +20,9 @@
     "bootswatch": "node ./scripts/bootswatch.js",
     "integrity": "node ./scripts/integrity.js",
     "wp-plugin": "node ./scripts/wp-plugin.js"
+  },
+  "engines": {
+    "node": "8.x"
   },
   "dependencies": {
     "async": "^2.6.0",
@@ -59,10 +62,70 @@
     "pug-lint": "^2.5.0",
     "pug-lint-config-clock": "^2.0.0",
     "request": "^2.83.0",
-    "semver": "^5.4.1"
+    "semver": "^5.4.1",
+    "xo": "^0.18.2"
   },
-  "engines": {
-    "node": "8.x"
+  "xo": {
+    "esnext": true,
+    "space": 4,
+    "rules": {
+      "arrow-parens": [
+        "error",
+        "always"
+      ],
+      "capitalized-comments": "off",
+      "global-require": "error",
+      "import/no-unassigned-import": [
+        "error",
+        {
+          "allow": [
+            "app.js"
+          ]
+        }
+      ],
+      "init-declarations": [
+        "error",
+        "always"
+      ],
+      "new-cap": "off",
+      "no-multi-spaces": [
+        "error",
+        {
+          "exceptions": {
+            "Property": true,
+            "VariableDeclarator": true
+          }
+        }
+      ],
+      "no-undefined": "error",
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "quote-props": [
+        "error",
+        "consistent"
+      ],
+      "unicorn/filename-case": "off",
+      "unicorn/no-process-exit": "off"
+    },
+    "overrides": [
+      {
+        "files": "public/assets/js/main.js",
+        "envs": [
+          "browser"
+        ],
+        "rules": {
+          "unicorn/no-abusive-eslint-disable": "off"
+        }
+      },
+      {
+        "files": "tests/*.js",
+        "envs": [
+          "mocha"
+        ]
+      }
+    ]
   },
   "browserslist": [
     "last 1 major version",
