@@ -89,30 +89,29 @@ function assertHeader(uri, header) {
 }
 
 describe('functional', () => {
-    describe('bootstrap3', () => {
-        config.bootstrap3.forEach((self) => {
-            describe(helpers.domainCheck(self.javascript), () => {
-                const uri = helpers.domainCheck(self.javascript);
 
-                Object.keys(expectedHeaders).forEach((header) => {
-                    assertHeader(uri, header);
-                });
+    config.bootstrap.forEach((self) => {
+        describe(helpers.domainCheck(self.javascript), () => {
+            const uri = helpers.domainCheck(self.javascript);
 
-                it('has integrity', (done) => {
-                    assertSRI(uri, self.javascriptSri, done);
-                });
+            Object.keys(expectedHeaders).forEach((header) => {
+                assertHeader(uri, header);
             });
 
-            describe(helpers.domainCheck(self.stylesheet), () => {
-                const uri = helpers.domainCheck(self.stylesheet);
+            it('has integrity', (done) => {
+                assertSRI(uri, self.javascriptSri, done);
+            });
+        });
 
-                Object.keys(expectedHeaders).forEach((header) => {
-                    assertHeader(uri, header);
-                });
+        describe(helpers.domainCheck(self.stylesheet), () => {
+            const uri = helpers.domainCheck(self.stylesheet);
 
-                it('has integrity', (done) => {
-                    assertSRI(uri, self.stylesheetSri, done);
-                });
+            Object.keys(expectedHeaders).forEach((header) => {
+                assertHeader(uri, header);
+            });
+
+            it('has integrity', (done) => {
+                assertSRI(uri, self.stylesheetSri, done);
             });
         });
     });
@@ -164,34 +163,6 @@ describe('functional', () => {
 
                 it('has integrity', (done) => {
                     assertSRI(uri, self.javascriptSri, done);
-                });
-            });
-        });
-    });
-
-    describe('bootstrap4', () => {
-        config.bootstrap4.forEach((self) => {
-            describe(helpers.domainCheck(self.javascript), () => {
-                const uri = helpers.domainCheck(self.javascript);
-
-                Object.keys(expectedHeaders).forEach((header) => {
-                    assertHeader(uri, header);
-                });
-
-                it('has integrity', (done) => {
-                    assertSRI(uri, self.javascriptSri, done);
-                });
-            });
-
-            describe(helpers.domainCheck(self.stylesheet), () => {
-                const uri = helpers.domainCheck(self.stylesheet);
-
-                Object.keys(expectedHeaders).forEach((header) => {
-                    assertHeader(uri, header);
-                });
-
-                it('has integrity', (done) => {
-                    assertSRI(uri, self.stylesheetSri, done);
                 });
             });
         });
