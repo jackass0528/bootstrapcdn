@@ -1,6 +1,9 @@
 -var bootstrap = config.bootstrap4.filter(function(o) { return o.latest; })[0];
 -var jquery = config.javascript.filter(function(o) { return o.name === 'jquery'; })[0];
 
+| loadjs('/assets/js/vendor/clipboard.min.js', 'main', {
+|     numRetries: 3
+| });
 | loadjs(['#{jquery.uri}', '#{bootstrap.javascriptBundle}'], 'jquery', {
 |     async: false,
 |     numRetries: 3
@@ -8,5 +11,13 @@
 | loadjs.ready('jquery', {
 |     success: function() {
 |         $('.ads-info-toggler').popover();
+|     }
+| })
+| .ready('main', {
+|     success: function() {
+if (process.env.NODE_ENV === 'production')
+    include:babel:uglify-js /assets/js/main.js
+else
+    include:babel /assets/js/main.js
 |     }
 | });
