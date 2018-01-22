@@ -8,16 +8,12 @@
 |     async: false,
 |     numRetries: 3
 | });
-| loadjs.ready('jquery', {
-|     success: function() {
-|         $('.ads-info-toggler').popover();
-|     }
+| loadjs.ready('jquery', function() {
+|     $('.ads-info-toggler').popover();
 | })
-| .ready('main', {
-|     success: function() {
+| .ready('main', function() {
 if (process.env.NODE_ENV === 'production')
     include:babel:uglify-js /assets/js/main.js
 else
     include:babel /assets/js/main.js
-|     }
 | });
